@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Tableau des Utilisateurs</title>
+</head>
+<body>
+
+    <form id="signup-form">
+        <label for="firstname">Prénom :</label>
+        <input type="text" id="firstname" name="firstname" required>
+
+        <label for="lastname">Nom :</label>
+        <input type="text" id="lastname" name="lastname" required>
+
+        <label for="phone">Téléphone :</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="email1">Email :</label>
+        <input type="email" id="email1" name="email1" required>
+
+        <label for="email2">Confirmer l'email :</label>
+        <input type="email" id="email2" name="email2" required>
+
+        <label for="password1">Mot de passe :</label>
+        <input type="password" id="password1" name="password1" required>
+
+        <label for="password2">Confirmer le mot de passe :</label>
+        <input type="password" id="password2" name="password2" required>
+
+        <button type="submit">Soumettre</button>
+    </form>
+
+    <h1>Liste des Utilisateurs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Mot de passe</th>
+            </tr>
+        </thead>
+        <tbody id="tableau"></tbody>
+    </table>
+
+    <script>
+        async function fetchAndDisplayUsers() {
+            try {
+                const response = await fetch('http://localhost:3000/users');
+                if (!response.ok) throw new Error('Erreur lors de la récupération des données');
+                const users = await response.json();
+                const tableBody = document.getElementById('tableau');
+                tableBody.innerHTML = '';
+                
+                let maxId = 0;
+                users.forEach(user => {
+                    maxId = Math.max(maxId, user.id);
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.firstname}</td>
+                            <td>${user.lastname}</td>
+                            <td>${user.email}</td>
+                            <td>${user.phone}</td>
+                            <td>${user.password}</td>
+                        </tr>
+                    `;
+                });
+                return maxId;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        document.getElementById("signup-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const firstname = document.getElementById("firstname").value;
+            const lastname = document.getElementById("lastname").value;
+            const phone = document.getElementById("phone").value;
+            const email1 = document.getElementById("email1").value;
+            const email2 = document.getElementById("email2").value;
+            const password1 = document.getElementById("password1").value;
+            const password2 = document.getElementById("password2").value;
+
+            if (email1 !== email2) {
+                alert("Les emails ne correspondent pas.");
+                return;
+            }
+
+            if (password1 !== password2) {
+                alert("Les mots de passe ne correspondent pas.");
+                return;
+            }
+
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+            if (!passwordRegex.test(password1)) {
+                alert("Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.");
+                return;
+            }
+
+            const users = await fetchAndDisplayUsers();
+            const newId = users + 1;
+
+            const user = { id: newId, firstname, lastname, phone, email: email1, password: password1 };
+
+            try {
+                const response = await fetch('http://localhost:3000/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(user),
+                });
+
+                if (response.ok) {
+                    alert("Utilisateur ajouté avec succès !");
+                    fetchAndDisplayUsers();  // Recharger les utilisateurs après ajout
+                } else {
+                    alert("Erreur lors de l'ajout de l'utilisateur.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Une erreur est survenue.");
+            }
+        });
+
+        window.onload = fetchAndDisplayUsers;
+    </script>
+
+</body>
+</html>

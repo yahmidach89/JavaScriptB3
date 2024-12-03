@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "firstname": "testFirst",
+      "lastname": "testLast",
+      "email": "test@test.com",
+      "phone": "0701020304",
+      "password": "password",
+      "id": "1"
+    },
+    {
+      "firstname": "testFirst",
+      "lastname": "testLast",
+      "email": "test@test.com",
+      "phone": "0701020304",
+      "password": "password",
+      "id": "2"
+    },
+    {
+      "id": "3",
+      "firstname": "Yanis",
+      "lastname": "AHmidach",
+      "phone": "0781040835",
+      "email": "yahmidach@gmail.com",
+      "password": "Ayanis89470!"
+    },
+    {
+      "id": 4,
+      "firstname": "a",
+      "lastname": "a",
+      "phone": "0781040835",
+      "email": "a@a.a",
+      "password": "Azerty12!"
+    }
+  ]
+}
